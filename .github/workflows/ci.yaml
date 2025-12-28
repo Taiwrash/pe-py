@@ -33,6 +33,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: taiwrash/python-api:${{ env.COMMIT_ID }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
     outputs:
       commit_id: ${{ env.COMMIT_ID  }}
 
@@ -43,38 +45,22 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v6
 
-        - name: Modify values file
-          shell: bash
-          run: |
-            echo ${{needs.ci.outputs.commit_id}}
-            sudo apt install python3
-            curl -sS https://bootstrap.pypa.io/get-pip.py | python3
-            export PATH="$HOME/.local/bin:$PATH"
-            pip3 install yq
-            yq -Yi '.image.tag = "${{needs.ci.outputs.commit_id}}"' charts/python-app/values.yaml
 
-
-        - name: Commit changes
-          uses: EndBug/add-and-commit@v9
-          with:
-            message: 'Updates values.yaml with commit ${{needs.ci.outputs.commit_id}}'
 
         - name: Install with Argo CD 
           shell: bash
+    
           run: |
-            curl -ksSL -o argocd https://argocd-server.argocd/download/argocd-linux-amd64
-            chmod +x argocd
-            sudo mv ./argocd /usr/local/bin/argocd
-        #   run: |
-        #     curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-        #     sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
-        #     rm argocd-linux-amd64
+            curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+            sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+            rm argocd-linux-amd64
 
 
         - name: Login to Argo CD 
           shell: bash
           run: |
             argocd login argocd-server.argocd --password ${{ secrets.ARGOCD_PASSWORD }} --username admin --grpc-web --insecure 
+            argocd app set python-app --helm-set image.tag=${{ needs.ci.outputs.commit_id }}
 
         - name: Sync to Argo CD 
           shell: bash

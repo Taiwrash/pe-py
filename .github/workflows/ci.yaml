@@ -48,9 +48,9 @@ jobs:
             echo ${{needs.ci.outputs.commit_id}}
             sudo apt install python3
             curl -sS https://bootstrap.pypa.io/get-pip.py | python3
-            export PATH="$HOME/.local/bin:$PATH"
+            python3 -m pip install yq
             pip3 install yq
-            yq -Yi '.image.tag = "${{needs.ci.outputs.commit_id}}"' charts/python-api/values.yaml
+            yq -Yi '.image.tag = "${{needs.ci.outputs.commit_id}}"' charts/python-app/values.yaml
 
 
         - name: Commit changes

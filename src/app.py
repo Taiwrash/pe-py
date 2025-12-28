@@ -11,8 +11,8 @@ def health():
       "status": "up"
    })
 
-@app.route("/api/v1/details")
-def details():
+@app.route("/api/v1/info")
+def info():
    return jsonify({
       "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
       "hostname": socket.gethostname(),

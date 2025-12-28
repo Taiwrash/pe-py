@@ -47,8 +47,8 @@ jobs:
           run: |
             echo ${{needs.ci.outputs.commit_id}}
             sudo apt install python3
-            sudo apt install python3-pip
-            pip install yq
+            sudo apt install python3-pip3
+            pip3 install yq
             yq -Yi '.image.tag = "${{needs.ci.outputs.commit_id}}"' charts/python-api/values.yaml
 
 

@@ -2,7 +2,7 @@ eplicaCount: 1
 image:
   repository: taiwrash/python-api
   pullPolicy: IfNotPresent
-  tag: d3e063
+  tag: a36191
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
